@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request
 import openai
 import os
+
 app = Flask(__name__)
 
-
-openai.api_key =  os.environ.get("OPENAI_API_KEY")# Replace with your OpenAI API key
-model_engine = "text-davinci-002" # Replace with the desired GPT model
+openai.api_key = os.environ.get("OPENAI_API_KEY")  # Replace with your OpenAI API key
+model_engine = "text-davinci-002"  # Replace with the desired GPT model
 
 def generate_description(prompt):
     prompt = f"Describe {prompt}."
@@ -39,11 +39,34 @@ def home():
     else:
         return render_template('index.html')
 
-    
-
 if __name__ == '__main__':
-   from waitress import serve
-   serve(app, host="0.0.0.0", port=8080)
+    # Gunicorn server configuration
+    host = '0.0.0.0'  # Set the host IP address
+    port = int(os.environ.get('PORT', 8080))  # Set the port number
+
+    # Start the Gunicorn server
+    from gunicorn.app.base import BaseApplication
+
+    class GunicornApp(BaseApplication):
+        def __init__(self, app, options=None):
+            self.options = options or {}
+            self.application = app
+            super().__init__()
+
+        def load_config(self):
+            config = {key: value for key, value in self.options.items()
+                      if key in self.cfg.settings and value is not None}
+            for key, value in config.items():
+                self.cfg.set(key.lower(), value)
+
+        def load(self):
+            return self.application
+
+    options = {
+        'bind': f'{host}:{port}',
+        'workers': 4,  # Adjust the number of workers as needed
+    }
+    GunicornApp(app, options).run()
 
 
 
