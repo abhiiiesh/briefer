@@ -1,24 +1,28 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import openai
 import os
 
 app = Flask(__name__)
 
-openai.api_key = os.environ.get("OPENAI_API_KEY")  # Replace with your OpenAI API key
-model_engine = "text-davinci-002"  # Replace with the desired GPT model
+openai.api_key = os.environ.get("OPENAI_API_KEY")
+model_engine = "text-davinci-002"
 
 def generate_description(prompt):
     prompt = f"Describe {prompt}."
-    response = openai.Completion.create(
-        engine=model_engine,
-        prompt=prompt,
-        max_tokens=150,
-        n=1,
-        stop=None,
-        temperature=0.5,
-    )
-    description = response.choices[0].text.strip()
-    return description
+    try:
+        response = openai.Completion.create(
+            engine=model_engine,
+            prompt=prompt,
+            max_tokens=150,
+            n=1,
+            stop=None,
+            temperature=0.5,
+        )
+        description = response.choices[0].text.strip()
+        return description
+    except Exception as e:
+        # Handle OpenAI API errors
+        return str(e)
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -27,9 +31,8 @@ def home():
         establishment = request.form['establishment']
         services = request.form['services']
         location = request.form['location']
-        prompt = f"Generate 5 grammatically correct with only 150 characters description for business, Business name {company_name} and Establish year as {establishment}  and services by  business are {services} , located in {location}."
+        prompt = f"Generate 5 grammatically correct 150-character descriptions for the business. Business name: {company_name}, Established in: {establishment}, Services: {services}, Location: {location}."
 
-        # Generate 5 descriptions
         descriptions = []
         for _ in range(5):
             description = generate_description(prompt)
@@ -39,34 +42,16 @@ def home():
     else:
         return render_template('index.html')
 
+@app.errorhandler(Exception)
+def handle_error(e):
+    # Return JSON response for any unhandled exception
+    response = jsonify(error=str(e))
+    response.status_code = 500
+    return response
+
 if __name__ == '__main__':
-    # Gunicorn server configuration
-    host = '0.0.0.0'  # Set the host IP address
-    port = int(os.environ.get('PORT', 8080))  # Set the port number
+    app.run(host='0.0.0.0', port=8080)
 
-    # Start the Gunicorn server
-    from gunicorn.app.base import BaseApplication
-
-    class GunicornApp(BaseApplication):
-        def __init__(self, app, options=None):
-            self.options = options or {}
-            self.application = app
-            super().__init__()
-
-        def load_config(self):
-            config = {key: value for key, value in self.options.items()
-                      if key in self.cfg.settings and value is not None}
-            for key, value in config.items():
-                self.cfg.set(key.lower(), value)
-
-        def load(self):
-            return self.application
-
-    options = {
-        'bind': f'{host}:{port}',
-        'workers': 4,  # Adjust the number of workers as needed
-    }
-    GunicornApp(app, options).run()
 
 
 
