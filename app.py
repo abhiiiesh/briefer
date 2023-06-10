@@ -31,7 +31,7 @@ def home():
         establishment = request.form['establishment']
         services = request.form['services']
         location = request.form['location']
-        prompt = f"Generate 5 grammatically correct 150-character descriptions for the business. Business name: {company_name}, Established in: {establishment}, Services: {services}, Location: {location}."
+        prompt = f"Generate 5 grammatically correct 150-character attractive descriptions for the business. Business name: {company_name}, Established in: {establishment}, Services: {services}, Location: {location}."
 
         descriptions = []
         description = generate_description(prompt)
