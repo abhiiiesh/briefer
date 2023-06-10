@@ -34,9 +34,9 @@ def home():
         prompt = f"Generate 5 grammatically correct 150-character descriptions for the business. Business name: {company_name}, Established in: {establishment}, Services: {services}, Location: {location}."
 
         descriptions = []
-        for _ in range(5):
-            description = generate_description(prompt)
-            descriptions.append(description)
+        description = generate_description(prompt)
+        descriptions.append(description)
+
 
         return render_template('index.html', descriptions=descriptions)
     else:
