@@ -16,7 +16,7 @@ def generate_description(prompt):
             max_tokens=700,
             n=1,
             stop=None,
-            temperature=0.5,
+            temperature=0.8,
         )
         description = response.choices[0].text.strip()
         return description
