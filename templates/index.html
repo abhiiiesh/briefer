@@ -55,13 +55,20 @@
       margin-bottom: 10px;
     }
 
-    input[type="text"] {
+    input[type="text"],
+    input[type="number"] {
       width: 300px;
       padding: 10px;
       border: 1px solid #cccccc;
       border-radius: 5px;
       font-size: 16px;
       margin-bottom: 10px;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-calendar-picker-indicator {
+      display: none;
+      -webkit-appearance: none;
     }
 
     button[type="submit"] {
@@ -143,9 +150,9 @@
           <input type="text" id="company_name" name="company_name">
 
           <label for="establishment">Establishment year</label>
-          <input type="text" id="establishment" name="establishment">
+          <input type="number" id="establishment" name="establishment" min="1800" max="2023">
 
-          <label for="services">Keyword for Businesses (eg. salon, grocery, designer indian wear .... etc)</label>
+          <label for="services">Keyword for Businesses (e.g., salon, grocery, designer Indian wear, etc.)</label>
           <input type="text" id="services" name="services">
 
           <label for="location">Business Location</label>
@@ -171,12 +178,13 @@
 
   </div>
 
+
+
   <script>
     /* Custom JavaScript code */
-    const inputElements = document.querySelectorAll('input[type="text"]');
+    const inputElements = document.querySelectorAll('input[type="text"], input[type="number"]');
     inputElements.forEach(inputElement => {
       inputElement.addEventListener('input', function () {
-        this.value = this.value();
       });
     });
 
@@ -201,9 +209,12 @@
       // Change the button text to "Copied!"
       copyButton.innerHTML = 'Copied!';
     });
+
+    // Ensure the selected year is not greater than the current year
+    const establishmentYearInput = document.getElementById('establishment');
+    const currentYear = new Date().getFullYear();
+    establishmentYearInput.max = currentYear;
   </script>
-
-
 </body>
 
 <footer>
@@ -211,4 +222,3 @@
 </footer>
 
 </html>
-
