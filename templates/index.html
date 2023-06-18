@@ -24,6 +24,7 @@
     body section {
       flex: 1;
       margin-right: 20px;
+      margin-right: 20px;
     }
 
     h1 {
@@ -35,12 +36,13 @@
     }
 
     nav {
-      background-color: #fa5503e6;
-      height: 50px;
+      background-color: #fa5503;
       position: fixed;
       text-align: center;
       top: 0;
       width: 100%;
+      padding: 10px;
+      color: #ffffff;
     }
 
     form {
@@ -92,7 +94,8 @@
       padding: 20px;
       margin-top: 50px;
       margin-bottom: 50px;
-      position: relative;
+      display: flex;
+      flex-direction: column;
     }
 
     h2 {
@@ -106,10 +109,7 @@
       line-height: 1.5;
     }
 
-    button#copy-button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
+    .copy-button {
       background-color: #f77728;
       color: #ffffff;
       font-size: 16px;
@@ -117,9 +117,10 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      margin-top: 10px;
     }
 
-    button#copy-button:hover {
+    .copy-button:hover {
       background-color: #f77728;
     }
 
@@ -135,16 +136,14 @@
   </style>
 </head>
 
-<nav>
-  <h1>USE ChatGPT TO GENERATE DESCRIPTION</h1>
-</nav>
-
 <body>
+  <nav>
+    <h1>USE ChatGPT TO GENERATE DESCRIPTION</h1>
+  </nav>
 
   <div id="container" style="display: flex; flex-wrap: wrap;">
     <section style="flex: 1; margin-right: 20px;">
       <div id="content">
-
         <form method="POST">
           <label for="company_name">Business Name</label>
           <input type="text" id="company_name" name="company_name">
@@ -167,50 +166,33 @@
       <div class="form-result">
         <h2>Generated Descriptions:</h2>
         {% for description in descriptions %}
-        <p>
-          {{ description }}
-        </p>
+        <p>{{ description }}</p>
+        <button class="copy-button">Copy</button>
         {% endfor %}
-        <button id="copy-button">Copy</button>
       </div>
     </section>
-
-
   </div>
-
-
 
   <script>
     /* Custom JavaScript code */
-    const inputElements = document.querySelectorAll('input[type="text"], input[type="number"]');
-    inputElements.forEach(inputElement => {
-      inputElement.addEventListener('input', function () {
+    const copyButtons = document.querySelectorAll('.copy-button');
+
+    copyButtons.forEach(copyButton => {
+      copyButton.addEventListener('click', function() {
+        const descriptionText = copyButton.previousElementSibling.textContent.trim();
+        navigator.clipboard.writeText(descriptionText)
+          .then(() => {
+            copyButton.innerHTML = 'Copied!';
+            setTimeout(() => {
+              copyButton.innerHTML = 'Copy';
+            }, 2000);
+          })
+          .catch(error => {
+            console.error('Failed to copy text: ', error);
+          });
       });
     });
 
-    // Get the copy button element
-    const copyButton = document.getElementById('copy-button');
-
-    // Add a click event listener to the button
-    copyButton.addEventListener('click', function() {
-      // Select the text to copy
-      const resultText = document.querySelector('.form-result p');
-      const range = document.createRange();
-      range.selectNode(resultText);
-      window.getSelection().removeAllRanges();
-      window.getSelection().addRange(range);
-
-      // Copy the selected text to the clipboard
-      document.execCommand('copy');
-
-      // Deselect the text
-      window.getSelection().removeAllRanges();
-
-      // Change the button text to "Copied!"
-      copyButton.innerHTML = 'Copied!';
-    });
-
-    // Ensure the selected year is not greater than the current year
     const establishmentYearInput = document.getElementById('establishment');
     const currentYear = new Date().getFullYear();
     establishmentYearInput.max = currentYear;
@@ -218,7 +200,7 @@
 </body>
 
 <footer>
-  <p> Powered by Vyaparify</p>
+  <p>Powered by Vyaparify</p>
 </footer>
 
 </html>
