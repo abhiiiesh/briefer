@@ -156,22 +156,16 @@
       </div>
     </section>
 
- <section style="flex: 1;">
+    <section style="flex: 1;">
       <div class="form-result">
         <h2>Generated Descriptions:</h2>
         {% for description in descriptions %}
         <p>
-          {% for sentence in description.split('.') %}
-          {{ sentence.strip() }}.<br>
-          {% endfor %}
+          {{ description }}
         </p>
-        <button id="copy-button">Copy</button>     
+        <button id="copy-button">Copy</button>
         {% endfor %}
-
-
-
       </div>
-
     </section>
 
 
